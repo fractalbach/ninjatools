@@ -6,7 +6,7 @@ OS=linux
 ARCH=amd64
 
 # Download the archived Go.
-sudo curl https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz
+sudo curl https://dl.google.com/go/go$VERSION.$OS-$ARCH.tar.gz -o go$VERSION.$OS-$ARCH.tar.gz
 
 # Unpack the Archive, placing it in /usr/local.
 sudo tar -C /usr/local -xzf go$VERSION.$OS-$ARCH.tar.gz
