@@ -6,16 +6,6 @@ OS=linux
 ARCH=amd64
 
 
-# Check current version of Go, because it might already be installed.
-# If the version is currently working correctly, don't bother downloading.
-if [[ "$(go version)" = "go version go$VERSION $OS/$ARCH" ]]; then
-    echo "You already have version $VERSION installed."
-else
-    DownloadAndUnpack
-fi
-AppendToPath
-
-
 
 # FUNCTION DownloadAndUnpack will do the following actions:
 # 1. Change directory to user's home.
@@ -31,10 +21,20 @@ function DownloadAndUnpack {
 
 
 
-# FUNCTION AppendToPath will...
-# 1. Append the GOPATH and the GOROOT to the user's bash PATH.
-function AppendToPath {
-    cat <<EOT >> ~/.profile
-    export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
-    EOT
-}
+# Check current version of Go, because it might already be installed.
+# If the version is currently working correctly, don't bother downloading.
+if [[ "$(go version)" = "go version go$VERSION $OS/$ARCH" ]]; then
+    echo "You already have version $VERSION installed."
+else
+    DownloadAndUnpack
+fi
+
+
+
+# Append the GOPATH and the GOROOT to the user's bash PATH.
+cat <<EOT >> ~/.profile
+export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin
+EOT
+
+
+
