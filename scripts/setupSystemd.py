@@ -56,8 +56,8 @@ args = parser.parse_args()
 # --------------------------------------------------------------------------
 # Determine Paths and Filenames
 #
-input_path = Path(args.file).resolve()
-input_path_string = str(input_path)
+input_pathObject = Path(args.file).resolve()
+input_path = str(input_pathObject)
 input_filename = input_path_string.split('/')[-1]
 target_path = TARGET_DIR + input_filename
 
@@ -75,7 +75,7 @@ def err(*args, **kwargs):
 # --------------------------------------------------------------------------
 # Input Confirmation
 #
-if not input_path.exists():
+if not input_pathObject.exists():
     err("Input Path does not exist.")
 if not os.path.isfile(input_path_string):
     err("Input Path must lead to a file.")
