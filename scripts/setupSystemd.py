@@ -82,7 +82,7 @@ if not os.path.isfile(input_path):
 if not os.access(input_path, os.R_OK):
     err("Input File needs to have read permissions.")
 
-print("Input File Path =", input_path.resolve())
+print("Input File Path = " + input_path)
 
 # --------------------------------------------------------------------------
 # Target Confirmation
