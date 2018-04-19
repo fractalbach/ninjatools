@@ -94,7 +94,7 @@ if not Path(TARGET_DIR).exists():
 # File Copying
 # 
 try:
-    print("Copying from", p, "to", target_path)
+    print("Copying from", input_path, "to", target_path)
     copyfile(input_path, target_path)
 except Exception as e:
     raise e
