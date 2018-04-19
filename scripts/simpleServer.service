@@ -1,0 +1,13 @@
+[Unit]
+Description=A Simple File Server
+Documentation=https://github.com/fractalbach/ninjatools/
+After=networking.target
+
+[Service]
+User=user
+Type=simple
+WorkingDirectory=/home/user/example/
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

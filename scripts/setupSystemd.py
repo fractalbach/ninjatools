@@ -3,155 +3,93 @@
 |                      Setup Systemd with Systemctl                         |
 |                                                                           |
 |                             Chris Achenbach                               |
-|                              18 April 2018                                |
+|                              19 April 2018                                |
 +---------------------------------------------------------------------------+                              
 
-- Creates a service file for systemd
-- Overwrites that service file, which should keep it updated.
-- Starts system
+Current Features:
+- Accepts path location of a file in the command's arguments.
+- Copies the file to /etc/systemd/system
+- Reports any errors that occur during the attempt to copy the file.
 
-TODO
-- Make a help message
-
-TODO: Error checking
-- check if the files were written correctly.
-- Check if the service was started correctly.
-
-
-TODO LATER
-- have the service file live somewhere else. (or have a template)
-- This program should simply move that file, and 
+TODO:
+- Use systemctl
+- Start running the service.
+- Enables the service, so that it will run automatically on startup.
+- Confirm that the service actually started.
 
 _____________________________________________________________________________
 """
 
+from __future__ import print_function
+import argparse
 import os
+import sys
 from pathlib import Path
 from platform import system
 from subprocess import call
+from shutil import copyfile
 
-
+# -------------------------------------------------------------------------- 
+# Variables
+# 
+VERSION = "0.2"
+TARGET_PATH = "/etc/systemd/system/"
 
 # --------------------------------------------------------------------------
-# Helper Functions
+# Parse CLI Arguments
 #
-# Credits ~ Thanks for the Source Code: 
-# https://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
-# 
-# function which acts like the Bash command "which", and returns the path
-# at which the program is located. If it can't be found, it returns "None".
-# 
-def which(program):
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", "--file",
+                    help="path of the input file.",
+                    required="true")
 
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
-
-
+parser.add_argument("-v", "--version",
+                    help="displays current version of the program.",
+                    action="version",
+                    version="%(prog)s version " + VERSION)
+args = parser.parse_args()
+input_path = Path(args.file)
 
 # --------------------------------------------------------------------------
-# Check for Systemctl
+# Error Print and Exit 
 # 
-# Without Systemctl, this program is essentially pointless.  It would be
-# wise to check for systemctl's existence before writing files everywhere.
+# function err() acts like the print(), but prints to standard error.
+# Credits:
+# https://stackoverflow.com/questions/5574702/how-to-print-to-stderr-in-python
 #
-# Most likely, systemctl is not going to be available on certain systems.
-# In particular, windows will not have systemctl.
-#
-# checkForSystemctl uses the which() function to check for systemctl on
-# the current system.  If all goes well, it prints a friendly message.
-# If systemctl can't be found, the program can't continue.
-#
-def checkForSystemctl():
-    x = which("systemctl")
-    if x == None:
-        print("Systemctl was not located in the OS path.  Exiting.")
-        exit(1)
-        
-    print("Found systemctl at path:", x)
-
-checkForSystemctl()
-
-# Since this program is still in the experimental stage, it should warn the
-# user that strange things may happen, and give them a chance to run away
-# before this program destroys their computer.
-
-ok = input("This is experimental, and may break something. Continue? (y/n)")
-if ok == "n":
-    print("Exiting program.")
-    exit(0)
-if ok != "y":
-    print("I don't recognize that input... so I'm just going to exit.")
+def err(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
     exit(1)
 
+# --------------------------------------------------------------------------
+# Input Confirmation
+#
+p = input_path
+if not p.exists():
+    err("Input Path does not exist.")
+if not os.path.isfile(p):
+    err("Input Path must lead to a file.")
+if not os.access(p, os.R_OK):
+    err("Input File needs to have read permissions.")
+
+print("Input File Path =", p.resolve())
 
 # --------------------------------------------------------------------------
-# Startup
-#
-# - Define constants/variables.
-# - parsing flags. (THERE ARE CURRENTLY NO FLAGS)
-# - print helpful messages. (THERE SHOULD BE A HELP MESSSAGE)
-
-print("Starting the setup...")
-
-filename = "simpleServer.service"
-filepath = "/etc/systemd/system/"
-fullpath = filepath + filename
-
-q = Path(filepath)
-print("Checking for the existence of path:", q)
-if not q.exists():
-    print("Error: can not find anything at the path:", q)
-    exit(1)
-
-
-
-filecontents = """
-[Unit]
-Description=A Simple File Server
-Documentation=https://github.com/fractalbach/ninjatools/
-After=networking.target
-
-[Service]
-User=user
-Type=simple
-WorkingDirectory=/home/user/example/
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-"""
-
+# Target Confirmation
+# 
+if not Path(TARGET_PATH).exists()
+    err("Target directory does not exist.  Cannot copy file.")
 
 # --------------------------------------------------------------------------
-# File Writing 
-#
-# - Write the File (it should automatically overwrite an existing file).
-# - Opens up the file to check if the file write was successful.
-#  
-print("Writing to the file:", fullpath)
-
-with open(fullpath, "w") as f:
-    f.write(filecontents)
-
-with open(fullpath, "r") as f:
-    x = f.read()
-
-if x == filecontents:
-    print("File was successfully written.")
+# File Copying
+# 
+try:
+    print("Copying from", p, "to", TARGET_PATH)
+    copyfile(p, TARGET_PATH)
+except Exception as e:
+    raise e
 else:
-    print("Error: The file's contents are different from what we intended to write.")
-    exit(1)
+    print("File successfully copied to", TARGET_PATH)
 
 
 # --------------------------------------------------------------------------
@@ -160,6 +98,43 @@ else:
 # - Start the service.
 # - Enable the service.
 # - TODO: Check if service is actually enabled correctly.
+
+
+# which(program) acts like the Bash command "which", and returns the path
+# at which the program is located. If it can't be found, it returns "None".
+#
+# Credits:
+# https://stackoverflow.com/questions/377017/test-if-executable-exists-in-python 
+# 
+# def which(program):
+#     def is_exe(fpath):
+#         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+#     fpath, fname = os.path.split(program)
+#     if fpath:
+#         if is_exe(program):
+#             return program
+#     else:
+#         for path in os.environ["PATH"].split(os.pathsep):
+#             exe_file = os.path.join(path, program)
+#             if is_exe(exe_file):
+#                 return exe_file
+#     return None
+
+
+# --------------------------------------------------------------------------
+# Check for Systemctl
+# 
+# def checkForSystemctl():
+#     x = which("systemctl")
+#     if x == None:
+#         print("Systemctl was not located in the OS path.  Exiting.")
+#         exit(1)
+#     print("Found systemctl at path:", x)
+# checkForSystemctl()
+
+
+# --------------------------------------------------------------------------
+# Start and Enable Service
 #
 # try:
 #     call(["sudo", "systemctl", "start", "simpleServer"])
@@ -170,9 +145,7 @@ else:
 
 # --------------------------------------------------------------------------
 # Success.
-# 
-# - Hurray! We reached the end of this program without crashing.
 #
-print("Setup ended without errors. Hurray!")
+print("%(prog)s finished with no errors. Hurray!")
 exit(0)
 
