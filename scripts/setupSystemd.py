@@ -17,6 +17,10 @@ TODO:
 - Enables the service, so that it will run automatically on startup.
 - Confirm that the service actually started.
 
+TODO LATER:
+- Infer targetpath based on systemd or systemctl configuration
+- Make a .config file so that you don't need to input commands directly.
+
 _____________________________________________________________________________
 """
 
@@ -33,7 +37,7 @@ from shutil import copyfile
 # Variables
 # 
 VERSION = "0.2"
-TARGET_PATH = "/etc/systemd/system/"
+TARGET_DIR = "/etc/systemd/system/"
 
 # --------------------------------------------------------------------------
 # Parse CLI Arguments
@@ -48,7 +52,14 @@ parser.add_argument("-v", "--version",
                     action="version",
                     version="%(prog)s version " + VERSION)
 args = parser.parse_args()
-input_path = Path(args.file)
+
+# --------------------------------------------------------------------------
+# Determine Paths and Filenames
+#
+input_path = Path(args.file).resolve()
+input_path_string = str(input_path)
+input_filename = input_path_string.split('/')[-1]
+target_path = TARGET_DIR + input_filename
 
 # --------------------------------------------------------------------------
 # Error Print and Exit 
@@ -64,32 +75,31 @@ def err(*args, **kwargs):
 # --------------------------------------------------------------------------
 # Input Confirmation
 #
-p = input_path
-if not p.exists():
+if not input_path.exists():
     err("Input Path does not exist.")
-if not os.path.isfile(p):
+if not os.path.isfile(input_path_string):
     err("Input Path must lead to a file.")
-if not os.access(p, os.R_OK):
+if not os.access(input_path_string, os.R_OK):
     err("Input File needs to have read permissions.")
 
-print("Input File Path =", p.resolve())
+print("Input File Path =", input_path.resolve())
 
 # --------------------------------------------------------------------------
 # Target Confirmation
 # 
-if not Path(TARGET_PATH).exists()
+if not Path(TARGET_DIR).exists():
     err("Target directory does not exist.  Cannot copy file.")
 
 # --------------------------------------------------------------------------
 # File Copying
 # 
 try:
-    print("Copying from", p, "to", TARGET_PATH)
-    copyfile(p, TARGET_PATH)
+    print("Copying from", p, "to", target_path)
+    copyfile(input_path, target_path)
 except Exception as e:
     raise e
 else:
-    print("File successfully copied to", TARGET_PATH)
+    print("File successfully copied to", target_path)
 
 
 # --------------------------------------------------------------------------
@@ -146,6 +156,6 @@ else:
 # --------------------------------------------------------------------------
 # Success.
 #
-print("%(prog)s finished with no errors. Hurray!")
+print("%(prog)s finished with no errors. Success!")
 exit(0)
 
