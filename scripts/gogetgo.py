@@ -5,7 +5,16 @@
 import os
 import sys
 
-# https://docs.python.org/3/library/sys.html#sys.platform
-environment_path = sys.platform
+# Don't run this yet.
+print("Not Ready yet.")
+exit(0)
 
-os.name
+
+
+# Initialize an object to store useful information in a dictionary.
+info = {}
+
+# https://docs.python.org/3/library/sys.html#sys.platform
+info['platform'] = sys.platform
+
+print(info)
