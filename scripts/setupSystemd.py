@@ -109,9 +109,9 @@ filepath = "/etc/systemd/system/"
 fullpath = filepath + filename
 
 q = Path(filepath)
-print("Checking for the existence of path:",q)
-if not q.exist():
-    print("Error: path",q, "does not exist.")
+print("Checking for the existence of path:", q)
+if not q.exists():
+    print("Error: can not find anything at the path:", q)
     exit(1)
 
 
@@ -131,8 +131,6 @@ StandardError=journal
 [Install]
 WantedBy=multi-user.target
 """
-print(filecontents)
-
 
 
 # --------------------------------------------------------------------------
@@ -163,11 +161,11 @@ else:
 # - Enable the service.
 # - TODO: Check if service is actually enabled correctly.
 #
-try:
-    call(["sudo", "systemctl", "start", "simpleServer"])
-    call(["sudo", "systemctl", "enable", "simpleServer"])
-except Exception as e:
-    raise e
+# try:
+#     call(["sudo", "systemctl", "start", "simpleServer"])
+#     call(["sudo", "systemctl", "enable", "simpleServer"])
+# except Exception as e:
+#     raise e
 
 
 # --------------------------------------------------------------------------
