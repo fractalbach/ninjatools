@@ -58,7 +58,7 @@ args = parser.parse_args()
 #
 input_pathObject = Path(args.file).resolve()
 input_path = str(input_pathObject)
-input_filename = input_path_string.split('/')[-1]
+input_filename = input_path.split('/')[-1]
 target_path = TARGET_DIR + input_filename
 
 # --------------------------------------------------------------------------
@@ -77,9 +77,9 @@ def err(*args, **kwargs):
 #
 if not input_pathObject.exists():
     err("Input Path does not exist.")
-if not os.path.isfile(input_path_string):
+if not os.path.isfile(input_path):
     err("Input Path must lead to a file.")
-if not os.access(input_path_string, os.R_OK):
+if not os.access(input_path, os.R_OK):
     err("Input File needs to have read permissions.")
 
 print("Input File Path =", input_path.resolve())
