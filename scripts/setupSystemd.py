@@ -25,8 +25,10 @@ TODO LATER
 _____________________________________________________________________________
 """
 
+import os
 from pathlib import Path
 from platform import system
+from subprocess import call
 
 
 
@@ -40,7 +42,6 @@ from platform import system
 # at which the program is located. If it can't be found, it returns "None".
 # 
 def which(program):
-    import os
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
@@ -163,12 +164,8 @@ else:
 # - TODO: Check if service is actually enabled correctly.
 #
 try:
-    exec("sudo", "systemctl", "start", "simpleServer")
-except Exception as e:
-    raise e
-
-try:
-    exec("sudo", "systemctl", "enable", "simpleServer")
+    call(["sudo", "systemctl", "start", "simpleServer"])
+    call(["sudo", "systemctl", "enable", "simpleServer"])
 except Exception as e:
     raise e
 
