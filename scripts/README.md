@@ -16,12 +16,16 @@ Current Features:
 - Accepts path location of a file in the command's arguments.
 - Copies the file to /etc/systemd/system
 - Reports any errors that occur during the attempt to copy the file.
-
-TODO:
 - Use systemctl
 - Start running the service.
 - Enables the service, so that it will run automatically on startup.
+
+TODO:
 - Confirm that the service actually started.
+
+
+
+
 
 
 

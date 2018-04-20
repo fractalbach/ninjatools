@@ -6,8 +6,8 @@ After=networking.target
 [Service]
 User=user
 Type=simple
-WorkingDirectory=$HOME/Desktop/example/
-ExecStart=$HOME/go/bin/simpleServer -a :80
+WorkingDirectory=/srv/example/
+ExecStart=simpleServer -a :80
 StandardError=journal
 
 [Install]

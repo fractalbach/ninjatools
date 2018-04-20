@@ -12,14 +12,10 @@ Current Features:
 - Reports any errors that occur during the attempt to copy the file.
 
 TODO:
-- Use systemctl
-- Start running the service.
-- Enables the service, so that it will run automatically on startup.
-- Confirm that the service actually started.
-
-TODO LATER:
+- Make a .config file.
+- Start and enable the service.
 - Infer targetpath based on systemd or systemctl configuration
-- Make a .config file so that you don't need to input commands directly.
+- Resolve non-absolute paths.
 
 CODE CLEANUP:
 - use less variables
@@ -133,8 +129,7 @@ def which(program):
 def checkForSystemctl():
     x = which("systemctl")
     if x == None:
-        print("Systemctl was not located in the OS path.  Exiting.")
-        exit(1)
+        err("Systemctl was not located in the OS path.  Exiting.")
     print("Found systemctl at path:", x)
 checkForSystemctl()
 
@@ -145,15 +140,12 @@ checkForSystemctl()
 # - Enable the service.
 # - TODO: Check if service is actually enabled correctly.
 # 
-try:
-    call(["sudo", "systemctl", "start", "simpleServer"])
-    call(["sudo", "systemctl", "enable", "simpleServer"])
-except Exception as e:
-    raise e
+call(["sudo", "systemctl", "start", "simpleServer"])
+call(["sudo", "systemctl", "enable", "simpleServer"])
 
 # --------------------------------------------------------------------------
 # Success.
 #
-print("%(prog)s finished with no errors. Success!")
+print("%(prog)s exits with no errors.")
 exit(0)
 
