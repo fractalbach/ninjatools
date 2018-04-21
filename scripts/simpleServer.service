@@ -4,10 +4,10 @@ Documentation=https://github.com/fractalbach/ninjatools/
 After=networking.target
 
 [Service]
-User=user
+User=pi
 Type=simple
 WorkingDirectory=/srv/example/
-ExecStart=simpleServer -a :80
+ExecStart=/bin/bash /home/pi/go/bin/simpleServer -a :8080
 StandardError=journal
 
 [Install]
